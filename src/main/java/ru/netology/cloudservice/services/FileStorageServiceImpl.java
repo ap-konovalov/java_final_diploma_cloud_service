@@ -1,36 +1,35 @@
 package ru.netology.cloudservice.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.netology.cloudservice.entities.User;
+import ru.netology.cloudservice.entities.UserFile;
+import ru.netology.cloudservice.exceptions.FileStorageException;
+import ru.netology.cloudservice.repositories.UsersFileRepository;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
 public class FileStorageServiceImpl implements FileStorageService {
 
+    private final UsersFileRepository usersFileRepository;
 
     public File getFile(User user, String filename) {
 //        TODO: implement method
-//        String filePath = fileStorageRepository.getFilePathByUserIdAndFilename(user.getId(), filename);
-        File f = new File("example.txt");
-        return f;
+        return null;
     }
 
-    public void saveFile(User user, String fileName, byte[] file, String hash) {
-        //        TODO: implement method
+    @SneakyThrows
+    public void storeFile(User user, MultipartFile file) {
         try {
-            FileOutputStream outputStream = new FileOutputStream(String.format("cloudservice/%s/%s", user.getId(), fileName));
-            outputStream.write(file);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            UserFile userFile = new UserFile(null, file.getOriginalFilename(), file.getBytes(), user);
+            usersFileRepository.save(userFile);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new FileStorageException("Failed to store file " + file.getOriginalFilename());
         }
-//        fileStorageRepository.saveFileInfo();
     }
 }

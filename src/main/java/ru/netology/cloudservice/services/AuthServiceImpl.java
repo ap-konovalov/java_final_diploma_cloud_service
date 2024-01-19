@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.netology.cloudservice.entities.User;
+import ru.netology.cloudservice.exceptions.BadCredentialsException;
 import ru.netology.cloudservice.exceptions.NoSuchUserException;
 import ru.netology.cloudservice.models.LoginRequestDto;
 import ru.netology.cloudservice.repositories.UsersRepository;
@@ -22,7 +23,9 @@ public class AuthServiceImpl implements AuthService {
     @SneakyThrows
     public String login(LoginRequestDto requestDto) {
         Optional<User> optionalUser = usersRepository.findByLoginAndPassword(requestDto.login(), requestDto.password());
-        checkUserIsPresentInDb(optionalUser);
+        if (!optionalUser.isPresent()) {
+            throw new NoSuchUserException("Check request data and try again.");
+        }
         User user = optionalUser.get();
         String authToken = getOrGenerateToken(user);
         saveTokenInDb(user, authToken);
@@ -38,7 +41,9 @@ public class AuthServiceImpl implements AuthService {
     public User getUserByToken(String authToken) {
         authToken = authToken.replace("Bearer ", "");
         Optional<User> optionalUser = usersRepository.findByAuthToken(authToken);
-        checkUserIsPresentInDb(optionalUser);
+        if (!optionalUser.isPresent()) {
+            throw new BadCredentialsException("Invalid token.");
+        }
         return optionalUser.get();
     }
 
@@ -49,11 +54,5 @@ public class AuthServiceImpl implements AuthService {
 
     private static String getOrGenerateToken(User user) {
         return user.getAuthToken() == null ? AuthTokenGeneratorUtils.generateAuthToken() : user.getAuthToken();
-    }
-
-    private static void checkUserIsPresentInDb(Optional<User> user) throws NoSuchUserException {
-        if (!user.isPresent()) {
-            throw new NoSuchUserException("Check request data and try again.");
-        }
     }
 }

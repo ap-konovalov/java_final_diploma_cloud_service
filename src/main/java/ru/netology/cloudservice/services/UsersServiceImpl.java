@@ -9,6 +9,7 @@ import ru.netology.cloudservice.exceptions.UserAddException;
 import ru.netology.cloudservice.models.UserAddRequestDto;
 import ru.netology.cloudservice.repositories.UsersRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,6 +26,6 @@ public class UsersServiceImpl implements UsersService {
             log.info("User with login '" + requestDto.login() + "' already exists in database.");
             throw new UserAddException("Unable to add this user.");
         }
-        usersRepository.save(new User(null, requestDto.login(), requestDto.password(), null));
+        usersRepository.save(new User(null, requestDto.login(), requestDto.password(), null, List.of()));
     }
 }
