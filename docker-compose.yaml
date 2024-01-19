@@ -1,0 +1,24 @@
+version: '3'
+services:
+
+  db:
+    image: postgres:12.17
+    volumes:
+      - ./db/var/lib/postgresql:/var/lib/postgresql
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: netology
+    ports:
+      - '5432:5432'
+
+#  backend:
+#    image: cloud-service:latest
+#    ports:
+#      - '5500:5500'
+#    build: .
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/netology
+#    depends_on:
+#      - db
