@@ -10,7 +10,6 @@ import ru.netology.cloudservice.exceptions.FileStorageException;
 import ru.netology.cloudservice.models.GetListOfFilesResponseDto;
 import ru.netology.cloudservice.repositories.UsersFileRepository;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +20,13 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     private final UsersFileRepository usersFileRepository;
 
-    public File getFile(User user, String filename) {
-//        TODO: implement method
-        return null;
+    @SneakyThrows
+    public UserFile getFile(User user, String fileName) {
+        UserFile file = usersFileRepository.findByUserIdAndFileName(user.getId(), fileName);
+        if (file == null) {
+            throw new FileStorageException("File not found.");
+        }
+        return file;
     }
 
     @SneakyThrows
@@ -39,6 +42,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     @SneakyThrows
     public void storeFile(User user, MultipartFile file) {
+        checkFileNotExistsInStorage(user.getId(), file);
         try {
             UserFile userFile = new UserFile(null, file.getOriginalFilename(), file.getBytes(), user);
             usersFileRepository.save(userFile);
@@ -54,5 +58,11 @@ public class FileStorageServiceImpl implements FileStorageService {
                 usersFileRepository.delete(file);
             }
         });
+    }
+
+    private void checkFileNotExistsInStorage(long userId, MultipartFile file) throws FileStorageException {
+        if (usersFileRepository.findByUserIdAndFileName(userId, file.getOriginalFilename()) != null) {
+            throw new FileStorageException("File with this name already exists id database. Rename file and try again.");
+        }
     }
 }

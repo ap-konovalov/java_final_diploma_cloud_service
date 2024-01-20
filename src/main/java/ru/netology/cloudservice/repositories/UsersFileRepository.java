@@ -10,4 +10,6 @@ import java.util.List;
 public interface UsersFileRepository extends JpaRepository<UserFile, Long> {
 
     List<UserFile> findByUserId(long userId);
+
+    UserFile findByUserIdAndFileName(Long userId, String fileName);
 }
