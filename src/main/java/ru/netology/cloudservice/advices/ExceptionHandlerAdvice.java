@@ -1,5 +1,6 @@
 package ru.netology.cloudservice.advices;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,17 +15,22 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(NoSuchUserException.class)
     public ResponseEntity<ErrorResponseDto> noSuchUserErrorHandler(NoSuchUserException exception) {
-        return ResponseEntity.badRequest().body(getErrorResponseDto(exception.getMessage(), 3));
+        return ResponseEntity.badRequest().body(getErrorResponseDto(exception.getMessage(), 1));
     }
 
     @ExceptionHandler(UserAddException.class)
     public ResponseEntity<ErrorResponseDto> userAddErrorHandler(UserAddException exception) {
-        return ResponseEntity.badRequest().body(getErrorResponseDto(exception.getMessage(), 4));
+        return ResponseEntity.badRequest().body(getErrorResponseDto(exception.getMessage(), 2));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponseDto> badCredentialsErrorHandler(BadCredentialsException exception) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(getErrorResponseDto(exception.getMessage(), 5));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(getErrorResponseDto(exception.getMessage(), 3));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponseDto> constraintViolationErrorHandler(ConstraintViolationException exception) {
+        return ResponseEntity.badRequest().body(getErrorResponseDto(exception.getMessage(), 4));
     }
 
     private ErrorResponseDto getErrorResponseDto(String errorMessage, int errorId) {

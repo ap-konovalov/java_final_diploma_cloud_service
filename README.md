@@ -20,12 +20,13 @@ Backend будет доступен по адресу http://localhost:5500<br>
 ## Тестирование
 Для создания тестовых пользователей в базе можно использовать контроллер UsersController.
 
-### Ссылка на задачу на разработку:
+### Ссылка на задачу на разработку сервиса:
 https://github.com/netology-code/jd-homeworks/blob/master/diploma/cloudservice.md
 
 ### Список используемой литературы:
 - [JavaRush - CORS](https://javarush.com/quests/lectures/questspring.level04.lecture25)
 - [Habr - Java Records (JEP 359)](https://habr.com/ru/articles/487308/)
 - [Baeldung - Defining Unique Constraints in JPA](https://www.baeldung.com/jpa-unique-constraints)
-- [How to Read HTTP Headers in Spring REST Controllers - Defining Unique Constraints in JPA](https://www.baeldung.com/spring-rest-http-headers)
-- [Generate the MD5 Checksum for a File in Java](https://www.baeldung.com/java-md5-checksum-file)
+- [Baeldung - Hibernate One to Many Annotation Tutorial](https://www.baeldung.com/hibernate-one-to-many)
+- [Baeldung - How to Read HTTP Headers in Spring REST Controllers - Defining Unique Constraints in JPA](https://www.baeldung.com/spring-rest-http-headers)
+- [Baeldung - Generate the MD5 Checksum for a File in Java](https://www.baeldung.com/java-md5-checksum-file)
