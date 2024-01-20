@@ -171,14 +171,14 @@ paths:
             type: string
           description: File name to upload
       requestBody:
-        description: Login and password hash
+        description: New file name
         required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                name:
+                filename:
                   type: string
       responses:
         '200':

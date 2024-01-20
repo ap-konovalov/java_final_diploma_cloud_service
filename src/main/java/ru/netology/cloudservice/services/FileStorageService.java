@@ -11,9 +11,11 @@ public interface FileStorageService {
 
     UserFile getFile(User user, String fileName);
 
-    List<GetListOfFilesResponseDto> getListOfFilesResponse(User user, int limit);
-
     void storeFile(User user, MultipartFile file);
 
+    void putFile(User user, String oldFileName, String newFileName);
+
     void deleteFile(User user, String fileName);
+
+    List<GetListOfFilesResponseDto> getListOfFilesResponse(User user, int limit);
 }

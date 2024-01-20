@@ -23,21 +23,8 @@ public class FileStorageServiceImpl implements FileStorageService {
     @SneakyThrows
     public UserFile getFile(User user, String fileName) {
         UserFile file = usersFileRepository.findByUserIdAndFileName(user.getId(), fileName);
-        if (file == null) {
-            throw new FileStorageException("File not found.");
-        }
+        checkFileIsPresentInStorage(file);
         return file;
-    }
-
-    @SneakyThrows
-    public List<GetListOfFilesResponseDto> getListOfFilesResponse(User user, int limit) {
-        List<UserFile> userFiles = usersFileRepository.findByUserId(user.getId());
-        limit = Math.min(userFiles.size(), limit);
-        List<GetListOfFilesResponseDto> responseList = new ArrayList<>(limit);
-        for (int i = 0; i < limit; i++) {
-            responseList.add(new GetListOfFilesResponseDto(userFiles.get(i).getFileName(), userFiles.get(i).getFileData().length));
-        }
-        return responseList;
     }
 
     @SneakyThrows
@@ -51,18 +38,44 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
     }
 
+    @SneakyThrows
+    @Override
+    public void putFile(User user, String oldFileName, String newFileName) {
+        UserFile file = usersFileRepository.findByUserIdAndFileName(user.getId(), oldFileName);
+        checkFileIsPresentInStorage(file);
+        file.setFileName(newFileName);
+        usersFileRepository.save(file);
+    }
+
     public void deleteFile(User user, String fileName) {
-        List<UserFile> files = usersFileRepository.findByUserId(user.getId());
-        files.stream().forEach(file -> {
-            if (file.getFileName().equals(fileName)) {
-                usersFileRepository.delete(file);
+        UserFile file = usersFileRepository.findByUserIdAndFileName(user.getId(), fileName);
+        usersFileRepository.delete(file);
+    }
+
+    @SneakyThrows
+    public List<GetListOfFilesResponseDto> getListOfFilesResponse(User user, int limit) {
+        List<UserFile> userFiles = usersFileRepository.findByUserId(user.getId());
+        limit = Math.min(userFiles.size(), limit);
+        List<GetListOfFilesResponseDto> responseList = new ArrayList<>(limit);
+        for (int i = 0; i < limit; i++) {
+            String fileName = userFiles.get(i).getFileName();
+            if (fileName == null) {
+                continue;
             }
-        });
+            responseList.add(new GetListOfFilesResponseDto(fileName, userFiles.get(i).getFileData().length));
+        }
+        return responseList;
     }
 
     private void checkFileNotExistsInStorage(long userId, MultipartFile file) throws FileStorageException {
         if (usersFileRepository.findByUserIdAndFileName(userId, file.getOriginalFilename()) != null) {
             throw new FileStorageException("File with this name already exists id database. Rename file and try again.");
+        }
+    }
+
+    private static void checkFileIsPresentInStorage(UserFile file) throws FileStorageException {
+        if (file == null) {
+            throw new FileStorageException("File not found.");
         }
     }
 }
