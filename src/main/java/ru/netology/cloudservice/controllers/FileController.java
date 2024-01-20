@@ -1,10 +1,12 @@
 package ru.netology.cloudservice.controllers;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -45,7 +47,8 @@ public class FileController {
     @SneakyThrows
     @GetMapping(path = "/list")
     public ResponseEntity<List<GetListOfFilesResponseDto>> getFiles(@RequestHeader("auth-token") String authToken,
-                                                                    @RequestParam @Positive(message = "Limit must be positive number.") int limit) {
+                                                                    @RequestParam
+                                                                    @Positive(message = "Limit must be positive number.") int limit) {
         User user = authService.getUserByToken(authToken);
         return ResponseEntity.ok(fileStorageService.getListOfFilesResponse(user, limit));
     }
@@ -58,5 +61,14 @@ public class FileController {
         User user = authService.getUserByToken(authToken);
         fileStorageService.storeFile(user, file);
         return ResponseEntity.ok("Success upload");
+    }
+
+    @SneakyThrows
+    @DeleteMapping("/file")
+    public ResponseEntity<String> deleteFile(@RequestHeader("auth-token") String authToken,
+                                             @RequestParam(name = "filename") @NotEmpty(message = "must not be empty") String fileName) {
+        User user = authService.getUserByToken(authToken);
+        fileStorageService.deleteFile(user, fileName);
+        return ResponseEntity.ok("Success deleted.");
     }
 }

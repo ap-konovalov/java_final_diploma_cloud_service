@@ -9,9 +9,11 @@ import java.util.List;
 
 public interface FileStorageService {
 
-    File getFile(User user, String filename);
+    File getFile(User user, String fileName);
 
     List<GetListOfFilesResponseDto> getListOfFilesResponse(User user, int limit);
 
     void storeFile(User user, MultipartFile file);
+
+    void deleteFile(User user, String fileName);
 }

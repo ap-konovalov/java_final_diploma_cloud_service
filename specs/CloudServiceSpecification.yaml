@@ -221,18 +221,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  filename:
-                    type: string
-                    description: File name
-                    required:
-                      - filename
-                  size:
-                    type: integer
-                    description: File size in bytes
-                    required:
-                      - size
+                type: array
+                items:
+                  $ref: '#/components/schemas/FileInfo'
         '400':
           description: Error input data
           content:
@@ -274,3 +265,16 @@ components:
       properties:
         auth-token:
           type: string
+    FileInfo:
+      type: object
+      properties:
+        filename:
+          type: string
+          description: File name
+          required:
+            - filename
+        size:
+          type: integer
+          description: File size in bytes
+          required:
+            - size

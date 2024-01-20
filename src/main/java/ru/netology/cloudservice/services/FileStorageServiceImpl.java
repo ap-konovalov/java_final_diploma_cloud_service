@@ -46,4 +46,13 @@ public class FileStorageServiceImpl implements FileStorageService {
             throw new FileStorageException("Failed to store file " + file.getOriginalFilename());
         }
     }
+
+    public void deleteFile(User user, String fileName) {
+        List<UserFile> files = usersFileRepository.findByUserId(user.getId());
+        files.stream().forEach(file -> {
+            if (file.getFileName().equals(fileName)) {
+                usersFileRepository.delete(file);
+            }
+        });
+    }
 }
