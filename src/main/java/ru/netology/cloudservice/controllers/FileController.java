@@ -47,7 +47,6 @@ public class FileController {
                              .contentType(MediaType.MULTIPART_FORM_DATA)
                              .contentLength(fileData.length)
                              .body(resource);
-
     }
 
     @SneakyThrows
@@ -57,7 +56,7 @@ public class FileController {
                                              @RequestParam MultipartFile file) {
         User user = authService.getUserByToken(authToken);
         fileStorageService.storeFile(user, file);
-        return ResponseEntity.ok("Success upload");
+        return ResponseEntity.ok("Success upload.");
     }
 
     @SneakyThrows
@@ -67,7 +66,7 @@ public class FileController {
                                           @RequestBody() PutFileRequestDto putFileRequestDto) {
         User user = authService.getUserByToken(authToken);
         fileStorageService.putFile(user, oldFileName, putFileRequestDto.filename());
-        return ResponseEntity.ok("Success updated");
+        return ResponseEntity.ok("Success updated.");
     }
 
     @SneakyThrows
