@@ -1,4 +1,4 @@
-package ru.netology.cloudservice.repository;
+package ru.netology.cloudservice.fragments;
 
 import lombok.experimental.UtilityClass;
 import ru.netology.cloudservice.entities.User;

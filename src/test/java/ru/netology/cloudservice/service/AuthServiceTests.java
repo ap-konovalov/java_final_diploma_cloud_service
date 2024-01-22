@@ -12,7 +12,7 @@ import ru.netology.cloudservice.exceptions.NoSuchUserException;
 import ru.netology.cloudservice.models.LoginRequestDto;
 import ru.netology.cloudservice.providers.UsersProvider;
 import ru.netology.cloudservice.repositories.UsersRepository;
-import ru.netology.cloudservice.repository.UserFragment;
+import ru.netology.cloudservice.fragments.UserFragment;
 import ru.netology.cloudservice.services.AuthServiceImpl;
 
 import java.util.Optional;

@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import ru.netology.cloudservice.entities.User;
+import ru.netology.cloudservice.fragments.UserFragment;
 import ru.netology.cloudservice.providers.UsersProvider;
 import ru.netology.cloudservice.repositories.UsersRepository;
 
