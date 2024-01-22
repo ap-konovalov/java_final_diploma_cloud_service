@@ -31,3 +31,5 @@ https://github.com/netology-code/jd-homeworks/blob/master/diploma/cloudservice.m
 - [Baeldung - How to Read HTTP Headers in Spring REST Controllers - Defining Unique Constraints in JPA](https://www.baeldung.com/spring-rest-http-headers)
 - [Baeldung - Generate the MD5 Checksum for a File in Java](https://www.baeldung.com/java-md5-checksum-file)
 - [Baeldung - assertAll() vs Multiple Assertions in JUnit5](https://www.baeldung.com/junit5-assertall-vs-multiple-assertions)
+- [Devwithus.com - Spring Boot Rest API Unit Testing with JUnit 5](https://devwithus.com/spring-boot-rest-api-unit-testing/)
+- [Baeldung - Assert an Exception Is Thrown in JUnit 4 and 5](https://www.baeldung.com/junit-assert-exception)
