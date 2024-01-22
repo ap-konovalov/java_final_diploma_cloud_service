@@ -17,9 +17,7 @@ import ru.netology.cloudservice.repositories.UsersRepository;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -45,6 +43,7 @@ public class UsersRepositoryTests {
     @BeforeEach
     public void setUp() {
         expectedUser = UsersProvider.getUser();
+        usersRepository.deleteAll();
         usersRepository.save(expectedUser);
     }
 
@@ -56,19 +55,19 @@ public class UsersRepositoryTests {
     @Test
     void canFindUserByLogin() {
         User actualUser = usersRepository.findByLogin(expectedUser.getLogin()).get();
-        checkFindUserResult(actualUser);
+        UserFragment.checkUserData(expectedUser, actualUser);
     }
 
     @Test
     void canFindUserByLoginAndPassword() {
         User actualUser = usersRepository.findByLoginAndPassword(expectedUser.getLogin(), expectedUser.getPassword()).get();
-        checkFindUserResult(actualUser);
+        UserFragment.checkUserData(expectedUser, actualUser);
     }
 
     @Test
     void canFindUserByAuthToken() {
         User actualUser = usersRepository.findByAuthToken(expectedUser.getAuthToken()).get();
-        checkFindUserResult(actualUser);
+        UserFragment.checkUserData(expectedUser, actualUser);
     }
 
     @Test
@@ -87,14 +86,5 @@ public class UsersRepositoryTests {
         usersRepository.save(expectedUser);
 
         assertEquals(1, usersRepository.findAll().size());
-    }
-
-    private static void checkFindUserResult(User actualUser) {
-        assertAll(
-                () -> assertTrue(actualUser.getId() > 0),
-                () -> assertTrue(actualUser.getLogin().equals(expectedUser.getLogin())),
-                () -> assertTrue(actualUser.getPassword().equals(expectedUser.getPassword())),
-                () -> assertTrue(actualUser.getAuthToken().equals(expectedUser.getAuthToken()))
-        );
     }
 }
