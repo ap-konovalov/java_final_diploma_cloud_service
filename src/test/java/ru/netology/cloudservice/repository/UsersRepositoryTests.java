@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import ru.netology.cloudservice.entities.User;
-import ru.netology.cloudservice.fragments.UserFragment;
+import ru.netology.cloudservice.helpers.UserHelper;
 import ru.netology.cloudservice.providers.UsersProvider;
 import ru.netology.cloudservice.repositories.UsersRepository;
 
@@ -56,19 +56,19 @@ public class UsersRepositoryTests {
     @Test
     void canFindUserByLogin() {
         User actualUser = usersRepository.findByLogin(expectedUser.getLogin()).get();
-        UserFragment.checkUserData(expectedUser, actualUser);
+        UserHelper.checkUserData(expectedUser, actualUser);
     }
 
     @Test
     void canFindUserByLoginAndPassword() {
         User actualUser = usersRepository.findByLoginAndPassword(expectedUser.getLogin(), expectedUser.getPassword()).get();
-        UserFragment.checkUserData(expectedUser, actualUser);
+        UserHelper.checkUserData(expectedUser, actualUser);
     }
 
     @Test
     void canFindUserByAuthToken() {
         User actualUser = usersRepository.findByAuthToken(expectedUser.getAuthToken()).get();
-        UserFragment.checkUserData(expectedUser, actualUser);
+        UserHelper.checkUserData(expectedUser, actualUser);
     }
 
     @Test

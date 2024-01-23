@@ -47,8 +47,10 @@ public class FileStorageServiceImpl implements FileStorageService {
         usersFileRepository.save(file);
     }
 
+    @SneakyThrows
     public void deleteFile(User user, String fileName) {
         UserFile file = usersFileRepository.findByUserIdAndFileName(user.getId(), fileName);
+        checkFileIsPresentInStorage(file);
         usersFileRepository.delete(file);
     }
 

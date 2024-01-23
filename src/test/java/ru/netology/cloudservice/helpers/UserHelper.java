@@ -1,4 +1,4 @@
-package ru.netology.cloudservice.fragments;
+package ru.netology.cloudservice.helpers;
 
 import lombok.experimental.UtilityClass;
 import ru.netology.cloudservice.entities.User;
@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UtilityClass
-public class UserFragment {
+public class UserHelper {
 
     public void checkUserData(User expectedUser, User actualUser) {
         assertAll(

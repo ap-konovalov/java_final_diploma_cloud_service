@@ -14,16 +14,12 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import ru.netology.cloudservice.entities.User;
 import ru.netology.cloudservice.entities.UserFile;
-import ru.netology.cloudservice.fragments.UserFragment;
+import ru.netology.cloudservice.helpers.FilesHelper;
 import ru.netology.cloudservice.providers.UsersProvider;
 import ru.netology.cloudservice.repositories.UsersFileRepository;
 import ru.netology.cloudservice.repositories.UsersRepository;
 
-import java.util.Arrays;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -72,8 +68,8 @@ public class UsersFileRepositoryTests {
     @Test
     void canFindFilesByUserId() {
         List<UserFile> actualUserFiles = usersFileRepository.findByUserId(expecedUser.getId());
-        checkUserFileResult(firstExpectedUserFile, getFileByName(actualUserFiles, FIRST_EXPECTED_FILE_NAME));
-        checkUserFileResult(secondExpectedUserFile, getFileByName(actualUserFiles, SECOND_EXPECTED_FILE_NAME));
+        FilesHelper.checkUserFileResult(expecedUser, firstExpectedUserFile, getFileByName(actualUserFiles, FIRST_EXPECTED_FILE_NAME));
+        FilesHelper.checkUserFileResult(expecedUser, secondExpectedUserFile, getFileByName(actualUserFiles, SECOND_EXPECTED_FILE_NAME));
     }
 
     @NotNull
@@ -86,15 +82,6 @@ public class UsersFileRepositoryTests {
     @Test
     void canFindFileByUserIdAndFileName() {
         UserFile actualUserFile = usersFileRepository.findByUserIdAndFileName(expecedUser.getId(), FIRST_EXPECTED_FILE_NAME);
-        checkUserFileResult(firstExpectedUserFile, actualUserFile);
-    }
-
-    private static void checkUserFileResult(UserFile expectedUserFile, UserFile actualUserFile) {
-        assertAll(
-                () -> assertTrue(Arrays.equals(actualUserFile.getFileData(), expectedUserFile.getFileData())),
-                () -> assertTrue(actualUserFile.getFileName().equals(expectedUserFile.getFileName())),
-                () -> assertTrue(actualUserFile.getId() > 0)
-        );
-        UserFragment.checkUserData(expecedUser, actualUserFile.getUser());
+        FilesHelper.checkUserFileResult(expecedUser, firstExpectedUserFile, actualUserFile);
     }
 }

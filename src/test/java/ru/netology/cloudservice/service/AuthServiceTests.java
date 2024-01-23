@@ -12,7 +12,7 @@ import ru.netology.cloudservice.exceptions.NoSuchUserException;
 import ru.netology.cloudservice.models.LoginRequestDto;
 import ru.netology.cloudservice.providers.UsersProvider;
 import ru.netology.cloudservice.repositories.UsersRepository;
-import ru.netology.cloudservice.fragments.UserFragment;
+import ru.netology.cloudservice.helpers.UserHelper;
 import ru.netology.cloudservice.services.AuthServiceImpl;
 
 import java.util.Optional;
@@ -60,7 +60,7 @@ public class AuthServiceTests {
         when(usersRepository.findByAuthToken(user.getAuthToken())).thenReturn(Optional.of(user));
         User actualUser = authService.getUserByToken("Bearer " + user.getAuthToken());
 
-        UserFragment.checkUserData(user, actualUser);
+        UserHelper.checkUserData(user, actualUser);
         verify(usersRepository).findByAuthToken(user.getAuthToken());
     }
 
