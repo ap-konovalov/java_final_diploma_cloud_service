@@ -44,7 +44,7 @@ public class FileStorageServiceTests {
 
     @BeforeAll
     public static void init() {
-        user = UsersProvider.getUser();
+        user = UsersProvider.getUserWithToken();
         user.setId(1L);
     }
 

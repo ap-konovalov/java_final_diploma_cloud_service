@@ -43,7 +43,7 @@ public class UsersRepositoryTests {
 
     @BeforeEach
     public void setUp() {
-        expectedUser = UsersProvider.getUser();
+        expectedUser = UsersProvider.getUserWithToken();
         usersRepository.deleteAll();
         usersRepository.save(expectedUser);
     }

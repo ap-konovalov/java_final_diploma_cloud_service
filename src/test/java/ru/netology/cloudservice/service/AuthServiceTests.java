@@ -35,7 +35,7 @@ public class AuthServiceTests {
 
     @BeforeAll
     public static void init() {
-        user = UsersProvider.getUser();
+        user = UsersProvider.getUserWithToken();
         user.setId(1L);
         loginRequestDto = new LoginRequestDto(user.getLogin(), user.getPassword());
     }

@@ -51,7 +51,7 @@ public class UsersFileRepositoryTests {
 
     @BeforeEach
     public void setUp() {
-        expecedUser = UsersProvider.getUser();
+        expecedUser = UsersProvider.getUserWithToken();
         usersRepository.save(expecedUser);
         expecedUser = usersRepository.findByLogin(expecedUser.getLogin()).get();
         firstExpectedUserFile = new UserFile(null, FIRST_EXPECTED_FILE_NAME, "First".getBytes(), expecedUser);
