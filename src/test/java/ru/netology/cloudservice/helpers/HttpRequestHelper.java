@@ -2,12 +2,23 @@ package ru.netology.cloudservice.helpers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.util.MultiValueMap;
+import ru.netology.cloudservice.models.GetListOfFilesResponseDto;
 import ru.netology.cloudservice.models.LoginResponseDto;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,6 +54,59 @@ public final class HttpRequestHelper {
 
     public void executePost(String endpoint, HttpHeaders headers) throws Exception {
         mockMvc.perform(post(endpoint).headers(headers))
+               .andDo(print())
+               .andExpect(status().isOk());
+    }
+
+    public void executePost(String endpoint, HttpHeaders headers, MultiValueMap params, MockMultipartFile file) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.multipart(endpoint)
+                                              .file(file)
+                                              .headers(headers)
+                                              .params(params)
+                                              .contentType(MediaType.MULTIPART_FORM_DATA))
+               .andDo(print())
+               .andExpect(status().isOk());
+    }
+
+    public byte[] executeGet(String endpoint, HttpHeaders headers, MultiValueMap queryParams) throws Exception {
+        return mockMvc.perform(get(endpoint)
+                                       .contentType(APPLICATION_JSON)
+                                       .headers(headers)
+                                       .queryParams(queryParams))
+                      .andDo(print())
+                      .andExpect(status().isOk())
+                      .andReturn()
+                      .getResponse()
+                      .getContentAsByteArray();
+    }
+
+    public <T> T executeGetListOfFiles(String endpoint, HttpHeaders headers, MultiValueMap queryParams) throws Exception {
+        String responseJson = mockMvc.perform(get(endpoint)
+                                                      .headers(headers)
+                                                      .queryParams(queryParams))
+                                     .andDo(print())
+                                     .andExpect(status().isOk())
+                                     .andReturn()
+                                     .getResponse()
+                                     .getContentAsString();
+        Type listType = new TypeToken<ArrayList<GetListOfFilesResponseDto>>(){}.getType();
+        return gson.fromJson(responseJson, listType);
+    }
+
+    public void executePut(String endpoint, HttpHeaders headers, MultiValueMap queryParams, Object body) throws Exception {
+        mockMvc.perform(put(endpoint)
+                                .contentType(APPLICATION_JSON)
+                                .headers(headers)
+                                .queryParams(queryParams)
+                                .content(gson.toJson(body)))
+               .andDo(print())
+               .andExpect(status().isOk());
+    }
+
+    public void executeDelete(String endpoint, HttpHeaders headers, MultiValueMap queryParams) throws Exception {
+        mockMvc.perform(delete(endpoint)
+                                .headers(headers)
+                                .queryParams(queryParams))
                .andDo(print())
                .andExpect(status().isOk());
     }

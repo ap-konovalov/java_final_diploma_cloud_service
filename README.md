@@ -18,7 +18,9 @@ Backend будет доступен по адресу http://localhost:5500<br>
 Операции логируются в файле app.log в корне проекта.
 
 ## Тестирование
-Для создания тестовых пользователей в базе можно использовать контроллер UsersController.
+Для создания тестовых пользователей в базе можно использовать контроллер UsersController. <br>
+Чтобы запустить тесты, необходимо собрать docker image с приложением, выполнив в терминале в корне проекта команды `gradle build` для 
+сборки jar файла приложения и `docker-compose up` для сборки docker image.
 
 ### Ссылка на задачу на разработку сервиса:
 https://github.com/netology-code/jd-homeworks/blob/master/diploma/cloudservice.md

@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import ru.netology.cloudservice.controller.AbstractControllerTest;
 import ru.netology.cloudservice.entities.User;
 import ru.netology.cloudservice.helpers.HttpRequestHelper;
 import ru.netology.cloudservice.models.LoginRequestDto;

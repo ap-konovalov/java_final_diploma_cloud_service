@@ -1,4 +1,4 @@
-package ru.netology.cloudservice.controller.authcontroller;
+package ru.netology.cloudservice.controller;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
