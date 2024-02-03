@@ -34,6 +34,25 @@ public class FileController {
     private final FileStorageService fileStorageService;
 
     @SneakyThrows
+    @PostMapping(path = "/file", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadFile(@RequestHeader("auth-token") String authToken,
+                                             @RequestParam(name = "filename") String fileName,
+                                             @RequestParam MultipartFile file) {
+        User user = authService.getUserByToken(authToken);
+        fileStorageService.storeFile(user, file);
+        return ResponseEntity.ok("Success upload.");
+    }
+
+    @SneakyThrows
+    @DeleteMapping("/file")
+    public ResponseEntity<Void> deleteFile(@RequestHeader("auth-token") String authToken,
+                                           @RequestParam(name = "filename") @NotEmpty(message = "must not be empty") String fileName) {
+        User user = authService.getUserByToken(authToken);
+        fileStorageService.deleteFile(user, fileName);
+        return ResponseEntity.ok().build();
+    }
+
+    @SneakyThrows
     @GetMapping("/file")
     public ResponseEntity<byte[]> getFile(@RequestHeader("auth-token") String authToken,
                                           @RequestParam(name = "filename") String fileName) {
@@ -45,31 +64,12 @@ public class FileController {
     }
 
     @SneakyThrows
-    @PostMapping(path = "/file", consumes = "multipart/form-data")
-    public ResponseEntity<String> uploadFile(@RequestHeader("auth-token") String authToken,
-                                             @RequestParam(name = "filename") String fileName,
-                                             @RequestParam MultipartFile file) {
-        User user = authService.getUserByToken(authToken);
-        fileStorageService.storeFile(user, file);
-        return ResponseEntity.ok("Success upload.");
-    }
-
-    @SneakyThrows
     @PutMapping("/file")
     public ResponseEntity<Void> putFile(@RequestHeader("auth-token") String authToken,
                                         @RequestParam(name = "filename") String oldFileName,
                                         @RequestBody() PutFileRequestDto putFileRequestDto) {
         User user = authService.getUserByToken(authToken);
         fileStorageService.putFile(user, oldFileName, putFileRequestDto.filename());
-        return ResponseEntity.ok().build();
-    }
-
-    @SneakyThrows
-    @DeleteMapping("/file")
-    public ResponseEntity<Void> deleteFile(@RequestHeader("auth-token") String authToken,
-                                           @RequestParam(name = "filename") @NotEmpty(message = "must not be empty") String fileName) {
-        User user = authService.getUserByToken(authToken);
-        fileStorageService.deleteFile(user, fileName);
         return ResponseEntity.ok().build();
     }
 
