@@ -4,7 +4,7 @@ info:
   description: Cloud API
   version: 1.0.0
 servers:
-  - url: 'http://localhost:8080/cloud'
+  - url: 'http://localhost:8080'
     description: local server
 paths:
   /login:
@@ -120,7 +120,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     get:
-      description: Dowload file from cloud
+      description: Download file from cloud
       parameters:
         - in: header
           name: auth-token

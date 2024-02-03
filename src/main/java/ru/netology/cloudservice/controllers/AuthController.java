@@ -25,9 +25,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader(name = "Auth-Token") String authToken) {
+    public ResponseEntity<Void> logout(@RequestHeader(name = "Auth-Token") String authToken) {
         User user = authService.getUserByToken(authToken);
         authService.logout(user);
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok().build();
     }
 }
