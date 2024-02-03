@@ -13,14 +13,16 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.netology.cloudservice.entities.User;
 import ru.netology.cloudservice.entities.UserFile;
 import ru.netology.cloudservice.exceptions.FileStorageException;
-import ru.netology.cloudservice.helpers.FilesHelper;
 import ru.netology.cloudservice.models.GetListOfFilesResponseDto;
 import ru.netology.cloudservice.providers.UsersProvider;
 import ru.netology.cloudservice.repositories.UsersFileRepository;
+import ru.netology.cloudservice.services.AuthServiceImpl;
 import ru.netology.cloudservice.services.FileStorageServiceImpl;
 
+import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
@@ -38,6 +40,9 @@ public class FileStorageServiceTests {
 
     @Mock
     private UsersFileRepository usersFilesRepository;
+
+    @Mock
+    private AuthServiceImpl authService;
 
     @InjectMocks
     private FileStorageServiceImpl fileStorageService;
@@ -57,18 +62,22 @@ public class FileStorageServiceTests {
     }
 
     @Test
-    public void getFIleShouldReturnUserFile() {
+    public void getFIleShouldReturnFile() {
         when(usersFilesRepository.findByUserIdAndFileName(user.getId(), FIRST_EXPECTED_FILE_NAME)).thenReturn(firstExpectedUserFile);
-        UserFile firstActualUserFile = fileStorageService.getFile(user, FIRST_EXPECTED_FILE_NAME);
+        when(authService.getUserByToken(user.getAuthToken())).thenReturn(user);
+        fileStorageService.setAuthService(authService);
+        byte[] firstActualUserFile = fileStorageService.getFile(user.getAuthToken(), FIRST_EXPECTED_FILE_NAME);
 
-        FilesHelper.checkUserFileResult(user, firstExpectedUserFile, firstActualUserFile);
+        assertTrue(Arrays.equals(firstActualUserFile, firstExpectedUserFile.getFileData()));
 
         verify(usersFilesRepository).findByUserIdAndFileName(user.getId(), FIRST_EXPECTED_FILE_NAME);
     }
 
     @Test
     public void getFIleShouldThrowExceptionIfFileNotExists() {
-        assertThrows(FileStorageException.class, () -> fileStorageService.getFile(user, FIRST_EXPECTED_FILE_NAME));
+        when(authService.getUserByToken(user.getAuthToken())).thenReturn(user);
+        fileStorageService.setAuthService(authService);
+        assertThrows(FileStorageException.class, () -> fileStorageService.getFile(user.getAuthToken(), FIRST_EXPECTED_FILE_NAME));
     }
 
     @Test
@@ -134,7 +143,7 @@ public class FileStorageServiceTests {
                 List.of(firstExpectedUserFile, secondExpectedUserFile, firstExpectedUserFile));
         List<GetListOfFilesResponseDto> response = fileStorageService.getListOfFilesResponse(user, limitFilesInResponse);
 
-        assertTrue(response.size() == limitFilesInResponse);
+        assertEquals(response.size(), limitFilesInResponse);
         verify(usersFilesRepository).findByUserId(user.getId());
     }
 
@@ -145,7 +154,7 @@ public class FileStorageServiceTests {
         when(usersFilesRepository.findByUserId(user.getId())).thenReturn(List.of(firstExpectedUserFile, secondExpectedUserFile));
         List<GetListOfFilesResponseDto> response = fileStorageService.getListOfFilesResponse(user, limitFilesInResponse);
 
-        assertTrue(getFileResponseByFileName(response, FIRST_EXPECTED_FILE_NAME).size() == firstExpectedUserFile.getFileData().length);
+        assertEquals(getFileResponseByFileName(response, FIRST_EXPECTED_FILE_NAME).size(), firstExpectedUserFile.getFileData().length);
         verify(usersFilesRepository).findByUserId(user.getId());
     }
 

@@ -2,6 +2,7 @@ package ru.netology.cloudservice.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.netology.cloudservice.entities.User;
@@ -20,11 +21,19 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     private final UsersFileRepository usersFileRepository;
 
+    private AuthServiceImpl authService;
+
+    @Autowired
+    public void setAuthService(AuthServiceImpl authService){
+        this.authService = authService;
+    }
+
     @SneakyThrows
-    public UserFile getFile(User user, String fileName) {
+    public byte[] getFile(String authToken, String fileName) {
+        User user = authService.getUserByToken(authToken);
         UserFile file = usersFileRepository.findByUserIdAndFileName(user.getId(), fileName);
         checkFileIsPresentInStorage(file);
-        return file;
+        return file.getFileData();
     }
 
     @SneakyThrows
