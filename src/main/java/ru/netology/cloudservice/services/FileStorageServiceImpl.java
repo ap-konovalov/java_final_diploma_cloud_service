@@ -1,7 +1,6 @@
 package ru.netology.cloudservice.services;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,11 +23,10 @@ public class FileStorageServiceImpl implements FileStorageService {
     private AuthServiceImpl authService;
 
     @Autowired
-    public void setAuthService(AuthServiceImpl authService){
+    public void setAuthService(AuthServiceImpl authService) {
         this.authService = authService;
     }
 
-    @SneakyThrows
     public byte[] getFile(String authToken, String fileName) {
         User user = authService.getUserByToken(authToken);
         UserFile file = usersFileRepository.findByUserIdAndFileName(user.getId(), fileName);
@@ -36,7 +34,6 @@ public class FileStorageServiceImpl implements FileStorageService {
         return file.getFileData();
     }
 
-    @SneakyThrows
     public void storeFile(User user, MultipartFile file) {
         checkFileNotExistsInStorage(user.getId(), file);
         try {
@@ -47,8 +44,6 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
     }
 
-    @SneakyThrows
-    @Override
     public void putFile(User user, String oldFileName, String newFileName) {
         UserFile file = usersFileRepository.findByUserIdAndFileName(user.getId(), oldFileName);
         checkFileIsPresentInStorage(file);
@@ -56,14 +51,12 @@ public class FileStorageServiceImpl implements FileStorageService {
         usersFileRepository.save(file);
     }
 
-    @SneakyThrows
     public void deleteFile(User user, String fileName) {
         UserFile file = usersFileRepository.findByUserIdAndFileName(user.getId(), fileName);
         checkFileIsPresentInStorage(file);
         usersFileRepository.delete(file);
     }
 
-    @SneakyThrows
     public List<GetListOfFilesResponseDto> getListOfFilesResponse(User user, int limit) {
         List<UserFile> userFiles = usersFileRepository.findByUserId(user.getId());
         limit = Math.min(userFiles.size(), limit);

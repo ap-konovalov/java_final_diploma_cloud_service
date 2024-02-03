@@ -3,7 +3,6 @@ package ru.netology.cloudservice.controllers;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +32,6 @@ public class FileController {
     private final AuthService authService;
     private final FileStorageService fileStorageService;
 
-    @SneakyThrows
     @PostMapping(path = "/file", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadFile(@RequestHeader("auth-token") String authToken,
                                              @RequestParam(name = "filename") String fileName,
@@ -43,7 +41,6 @@ public class FileController {
         return ResponseEntity.ok("Success upload.");
     }
 
-    @SneakyThrows
     @DeleteMapping("/file")
     public ResponseEntity<Void> deleteFile(@RequestHeader("auth-token") String authToken,
                                            @RequestParam(name = "filename") @NotEmpty(message = "must not be empty") String fileName) {
@@ -52,7 +49,6 @@ public class FileController {
         return ResponseEntity.ok().build();
     }
 
-    @SneakyThrows
     @GetMapping("/file")
     public ResponseEntity<byte[]> getFile(@RequestHeader("auth-token") String authToken,
                                           @RequestParam(name = "filename") String fileName) {
@@ -63,7 +59,6 @@ public class FileController {
                              .body(fileData);
     }
 
-    @SneakyThrows
     @PutMapping("/file")
     public ResponseEntity<Void> putFile(@RequestHeader("auth-token") String authToken,
                                         @RequestParam(name = "filename") String oldFileName,
@@ -73,7 +68,6 @@ public class FileController {
         return ResponseEntity.ok().build();
     }
 
-    @SneakyThrows
     @GetMapping(path = "/list")
     public ResponseEntity<List<GetListOfFilesResponseDto>> getFiles(@RequestHeader("auth-token") String authToken,
                                                                     @RequestParam
