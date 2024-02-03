@@ -60,21 +60,21 @@ public class FileController {
 
     @SneakyThrows
     @PutMapping("/file")
-    public ResponseEntity<String> putFile(@RequestHeader("auth-token") String authToken,
+    public ResponseEntity<Void> putFile(@RequestHeader("auth-token") String authToken,
                                           @RequestParam(name = "filename") String oldFileName,
                                           @RequestBody() PutFileRequestDto putFileRequestDto) {
         User user = authService.getUserByToken(authToken);
         fileStorageService.putFile(user, oldFileName, putFileRequestDto.filename());
-        return ResponseEntity.ok("Success updated.");
+        return ResponseEntity.ok().build();
     }
 
     @SneakyThrows
     @DeleteMapping("/file")
-    public ResponseEntity<String> deleteFile(@RequestHeader("auth-token") String authToken,
+    public ResponseEntity<Void> deleteFile(@RequestHeader("auth-token") String authToken,
                                              @RequestParam(name = "filename") @NotEmpty(message = "must not be empty") String fileName) {
         User user = authService.getUserByToken(authToken);
         fileStorageService.deleteFile(user, fileName);
-        return ResponseEntity.ok("Success deleted.");
+        return ResponseEntity.ok().build();
     }
 
     @SneakyThrows
