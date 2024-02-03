@@ -37,16 +37,15 @@ public class FileController {
 
     @SneakyThrows
     @GetMapping("/file")
-    public ResponseEntity<ByteArrayResource> getFile(@RequestHeader("auth-token") String authToken,
-                                                     @RequestParam(name = "filename") String fileName) {
+    public ResponseEntity<byte[]> getFile(@RequestHeader("auth-token") String authToken,
+                                          @RequestParam(name = "filename") String fileName) {
         User user = authService.getUserByToken(authToken);
         UserFile file = fileStorageService.getFile(user, fileName);
         byte[] fileData = file.getFileData();
-        ByteArrayResource resource = new ByteArrayResource(fileData);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\"")
                              .contentType(MediaType.MULTIPART_FORM_DATA)
                              .contentLength(fileData.length)
-                             .body(resource);
+                             .body(fileData);
     }
 
     @SneakyThrows
