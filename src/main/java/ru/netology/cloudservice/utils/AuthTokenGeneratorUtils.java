@@ -9,9 +9,10 @@ import java.util.Base64;
 public class AuthTokenGeneratorUtils {
 
     private final SecureRandom RANDOM = new SecureRandom();
+    private static final int TOKEN_LENGTH = 32;
 
     public String generateAuthToken() {
-        byte[] token = new byte[32];
+        byte[] token = new byte[TOKEN_LENGTH];
         RANDOM.nextBytes(token);
         return Base64.getEncoder().encodeToString(token);
     }
