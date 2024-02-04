@@ -36,3 +36,4 @@ https://github.com/netology-code/jd-homeworks/blob/master/diploma/cloudservice.m
 - [Devwithus.com - Spring Boot Rest API Unit Testing with JUnit 5](https://devwithus.com/spring-boot-rest-api-unit-testing/)
 - [Baeldung - Guide to @ConfigurationProperties in Spring Boot](https://www.baeldung.com/configuration-properties-in-spring-boot)
 - [JavaRush - Зачем использовать SerialVersionUID внутри Serializable класса в Java](https://javarush.com/groups/posts/1034-zachem-ispoljhzovatjh-serialversionuid-vnutri-serializable-klassa-v-java)
+- [Limiting Query Results With JPA and Spring Data JPA](https://www.baeldung.com/jpa-limit-query-results)

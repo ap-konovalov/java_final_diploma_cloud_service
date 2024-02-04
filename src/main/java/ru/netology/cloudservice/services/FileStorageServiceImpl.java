@@ -2,16 +2,16 @@ package ru.netology.cloudservice.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.netology.cloudservice.dto.GetListOfFilesResponseDto;
 import ru.netology.cloudservice.entities.User;
 import ru.netology.cloudservice.entities.UserFile;
 import ru.netology.cloudservice.exceptions.FileStorageException;
-import ru.netology.cloudservice.dto.GetListOfFilesResponseDto;
 import ru.netology.cloudservice.repositories.UsersFileRepository;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -58,17 +58,10 @@ public class FileStorageServiceImpl implements FileStorageService {
     }
 
     public List<GetListOfFilesResponseDto> getListOfFilesResponse(User user, int limit) {
-        List<UserFile> userFiles = usersFileRepository.findByUserId(user.getId());
-        limit = Math.min(userFiles.size(), limit);
-        List<GetListOfFilesResponseDto> responseList = new ArrayList<>(limit);
-        for (int i = 0; i < limit; i++) {
-            String fileName = userFiles.get(i).getFileName();
-            if (fileName == null) {
-                continue;
-            }
-            responseList.add(new GetListOfFilesResponseDto(fileName, userFiles.get(i).getFileData().length));
-        }
-        return responseList;
+        List<UserFile> userFiles = usersFileRepository.findByUserId(user.getId(), PageRequest.of(0, limit));
+        return userFiles.stream()
+                        .map(userFile -> new GetListOfFilesResponseDto(userFile.getFileName(), userFile.getFileData().length))
+                        .toList();
     }
 
     private void checkFileNotExistsInStorage(long userId, MultipartFile file) throws FileStorageException {

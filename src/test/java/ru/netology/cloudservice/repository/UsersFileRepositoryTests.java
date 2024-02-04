@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -67,7 +68,7 @@ public class UsersFileRepositoryTests {
 
     @Test
     void canFindFilesByUserId() {
-        List<UserFile> actualUserFiles = usersFileRepository.findByUserId(expecedUser.getId());
+        List<UserFile> actualUserFiles = usersFileRepository.findByUserId(expecedUser.getId(), PageRequest.of(0, 2));
         FilesHelper.checkUserFileResult(expecedUser, firstExpectedUserFile, getFileByName(actualUserFiles, FIRST_EXPECTED_FILE_NAME));
         FilesHelper.checkUserFileResult(expecedUser, secondExpectedUserFile, getFileByName(actualUserFiles, SECOND_EXPECTED_FILE_NAME));
     }

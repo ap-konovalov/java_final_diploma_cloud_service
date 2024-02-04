@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import ru.netology.cloudservice.entities.User;
@@ -139,23 +140,24 @@ public class FileStorageServiceTests {
     public void getListOfFilesShouldReturnListOfFilesWithLimit() {
         int limitFilesInResponse = 2;
 
-        when(usersFilesRepository.findByUserId(user.getId())).thenReturn(
-                List.of(firstExpectedUserFile, secondExpectedUserFile, firstExpectedUserFile));
+        when(usersFilesRepository.findByUserId(user.getId(), PageRequest.of(0, limitFilesInResponse)))
+                .thenReturn(List.of(firstExpectedUserFile, secondExpectedUserFile));
         List<GetListOfFilesResponseDto> response = fileStorageService.getListOfFilesResponse(user, limitFilesInResponse);
 
         assertEquals(response.size(), limitFilesInResponse);
-        verify(usersFilesRepository).findByUserId(user.getId());
+        verify(usersFilesRepository).findByUserId(user.getId(), PageRequest.of(0, limitFilesInResponse));
     }
 
     @Test
     public void getListOfFilesShouldReturnFileSizeAndName() {
         int limitFilesInResponse = 2;
 
-        when(usersFilesRepository.findByUserId(user.getId())).thenReturn(List.of(firstExpectedUserFile, secondExpectedUserFile));
+        when(usersFilesRepository.findByUserId(user.getId(), PageRequest.of(0, limitFilesInResponse))).thenReturn(
+                List.of(firstExpectedUserFile, secondExpectedUserFile));
         List<GetListOfFilesResponseDto> response = fileStorageService.getListOfFilesResponse(user, limitFilesInResponse);
 
         assertEquals(getFileResponseByFileName(response, FIRST_EXPECTED_FILE_NAME).size(), firstExpectedUserFile.getFileData().length);
-        verify(usersFilesRepository).findByUserId(user.getId());
+        verify(usersFilesRepository).findByUserId(user.getId(), PageRequest.of(0, limitFilesInResponse));
     }
 
     @NotNull
