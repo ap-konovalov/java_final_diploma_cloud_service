@@ -70,7 +70,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
     }
 
-    private static void checkFileIsPresentInStorage(UserFile file) throws FileStorageException {
+    private void checkFileIsPresentInStorage(UserFile file) throws FileStorageException {
         if (file == null) {
             throw new FileStorageException("File not found.");
         }
