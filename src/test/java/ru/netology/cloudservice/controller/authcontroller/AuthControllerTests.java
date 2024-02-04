@@ -10,15 +10,20 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.netology.cloudservice.controller.AbstractControllerTest;
-import ru.netology.cloudservice.entities.User;
-import ru.netology.cloudservice.helpers.HttpRequestHelper;
+import ru.netology.cloudservice.dto.ErrorResponseDto;
 import ru.netology.cloudservice.dto.LoginRequestDto;
 import ru.netology.cloudservice.dto.LoginResponseDto;
+import ru.netology.cloudservice.entities.User;
+import ru.netology.cloudservice.helpers.HttpRequestHelper;
 import ru.netology.cloudservice.providers.UsersProvider;
 import ru.netology.cloudservice.repositories.UsersRepository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.netology.cloudservice.enums.ErrorCode.BAD_CREDENTIALS_ERROR;
+import static ru.netology.cloudservice.enums.ErrorCode.NO_SUCH_USER_ERROR;
 
 
 @Testcontainers
@@ -59,7 +64,18 @@ class AuthControllerTests extends AbstractControllerTest {
 
     @Test
     @SneakyThrows
-    void logoutShouldRemoveToken(){
+    void loginForNotExistingUserShouldReturnError() {
+        LoginRequestDto requestBody = new LoginRequestDto(user.getLogin(), user.getPassword());
+
+        ErrorResponseDto response = httpRequestHelper.executePostWithError("/login", requestBody, status().isBadRequest());
+
+        assertEquals("Check request data and try again.", response.getMessage());
+        assertEquals(NO_SUCH_USER_ERROR.getCode(), response.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    void logoutShouldRemoveToken() {
         usersRepository.save(user);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Auth-Token", user.getAuthToken());
@@ -67,5 +83,17 @@ class AuthControllerTests extends AbstractControllerTest {
         httpRequestHelper.executePost("/logout", headers);
 
         assertNull(usersRepository.findByLogin(user.getLogin()).get().getAuthToken(), "Auth token should be removed when logout.");
+    }
+
+    @Test
+    @SneakyThrows
+    void logoutShouldReturnErrorIfUserNotFoundByToken() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Auth-Token", user.getAuthToken());
+
+        ErrorResponseDto response = httpRequestHelper.executePostWithError("/logout", headers, status().isUnauthorized());
+
+        assertEquals("Invalid token.", response.getMessage());
+        assertEquals(BAD_CREDENTIALS_ERROR.getCode(), response.getId());
     }
 }

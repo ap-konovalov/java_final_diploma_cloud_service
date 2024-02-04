@@ -1,13 +1,12 @@
 package ru.netology.cloudservice.services;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.netology.cloudservice.dto.LoginRequestDto;
 import ru.netology.cloudservice.entities.User;
 import ru.netology.cloudservice.exceptions.BadCredentialsException;
 import ru.netology.cloudservice.exceptions.NoSuchUserException;
-import ru.netology.cloudservice.dto.LoginRequestDto;
 import ru.netology.cloudservice.repositories.UsersRepository;
 import ru.netology.cloudservice.utils.AuthTokenGeneratorUtils;
 
@@ -20,7 +19,6 @@ public class AuthServiceImpl implements AuthService {
 
     private final UsersRepository usersRepository;
 
-    @SneakyThrows
     public String login(LoginRequestDto requestDto) {
         Optional<User> optionalUser = usersRepository.findByLoginAndPassword(requestDto.login(), requestDto.password());
         if (!optionalUser.isPresent()) {
@@ -37,7 +35,6 @@ public class AuthServiceImpl implements AuthService {
         usersRepository.save(user);
     }
 
-    @SneakyThrows
     public User getUserByToken(String authToken) {
         authToken = authToken.replace("Bearer ", "");
         Optional<User> optionalUser = usersRepository.findByAuthToken(authToken);

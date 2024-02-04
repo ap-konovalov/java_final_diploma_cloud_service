@@ -54,10 +54,36 @@ public final class HttpRequestHelper {
         return gson.fromJson(responeseString, tClass);
     }
 
+    public <T> T executePostWithError(String endpoint, Object body, ResultMatcher resultMatcher) throws Exception {
+        String responseJson = mockMvc.perform(post(endpoint)
+                                                      .contentType(APPLICATION_JSON)
+                                                      .content(gson.toJson(body)))
+                                     .andDo(print())
+                                     .andExpect(resultMatcher)
+                                     .andReturn()
+                                     .getResponse()
+                                     .getContentAsString();
+        Type listType = new TypeToken<ErrorResponseDto>() {
+        }.getType();
+        return gson.fromJson(responseJson, listType);
+    }
+
     public void executePost(String endpoint, HttpHeaders headers) throws Exception {
         mockMvc.perform(post(endpoint).headers(headers))
                .andDo(print())
                .andExpect(status().isOk());
+    }
+
+    public <T> T executePostWithError(String endpoint, HttpHeaders headers, ResultMatcher resultMatcher) throws Exception {
+        String responseJson = mockMvc.perform(post(endpoint).headers(headers))
+                                     .andDo(print())
+                                     .andExpect(resultMatcher)
+                                     .andReturn()
+                                     .getResponse()
+                                     .getContentAsString();
+        Type listType = new TypeToken<ErrorResponseDto>() {
+        }.getType();
+        return gson.fromJson(responseJson, listType);
     }
 
     public void executePost(String endpoint, HttpHeaders headers, MultiValueMap params, MockMultipartFile file) throws Exception {
