@@ -15,6 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.netology.cloudservice.controller.AbstractControllerTest;
+import ru.netology.cloudservice.dto.ErrorResponseDto;
 import ru.netology.cloudservice.entities.User;
 import ru.netology.cloudservice.entities.UserFile;
 import ru.netology.cloudservice.helpers.HttpRequestHelper;
@@ -30,6 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.netology.cloudservice.enums.ErrorCode.BAD_CREDENTIALS_ERROR;
+import static ru.netology.cloudservice.enums.ErrorCode.FILE_STORAGE_ERROR;
 
 
 @Testcontainers
@@ -37,6 +41,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AutoConfigureMockMvc
 class FilesControllerTests extends AbstractControllerTest {
 
+    private static final String INVALID_TOKEN_ERROR_MESSAGE = "Invalid token.";
+    private static final String FILE_NOT_FOUND_ERROR_MESSAGE = "File not found.";
     @Autowired
     UsersRepository usersRepository;
 
@@ -84,6 +90,29 @@ class FilesControllerTests extends AbstractControllerTest {
 
     @Test
     @SneakyThrows
+    void getFileShouldReturnErrorIfFileNotPresentInStorage() {
+        queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
+
+        ErrorResponseDto response = httpRequestHelper.executeGetWithError(FILE_ENDPOINT, headers, queryParams, status().isBadRequest());
+
+        assertEquals(FILE_NOT_FOUND_ERROR_MESSAGE, response.getMessage());
+        assertEquals(FILE_STORAGE_ERROR.getCode(), response.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    void getFileShouldReturnErrorIfUserNotFoundByToken() {
+        usersRepository.deleteAll();
+        queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
+
+        ErrorResponseDto response = httpRequestHelper.executeGetWithError(FILE_ENDPOINT, headers, queryParams, status().isUnauthorized());
+
+        assertEquals(INVALID_TOKEN_ERROR_MESSAGE, response.getMessage());
+        assertEquals(BAD_CREDENTIALS_ERROR.getCode(), response.getId());
+    }
+
+    @Test
+    @SneakyThrows
     void postFileShouldSaveFileInStorage() {
         queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
         MockMultipartFile multipartFile = new MockMultipartFile("file", FIRST_EXPECTED_FILE_NAME, MediaType.TEXT_PLAIN.getType(),
@@ -93,6 +122,36 @@ class FilesControllerTests extends AbstractControllerTest {
 
         UserFile responseFile = usersFileRepository.findByUserIdAndFileName(user.getId(), FIRST_EXPECTED_FILE_NAME);
         assertArrayEquals(responseFile.getFileData(), firstExpectedUserFile.getFileData());
+    }
+
+    @Test
+    @SneakyThrows
+    void postFileShouldReturnErrorIfUserNotFoundByToken() {
+        queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
+        usersRepository.deleteAll();
+        MockMultipartFile multipartFile = new MockMultipartFile("file", FIRST_EXPECTED_FILE_NAME, MediaType.TEXT_PLAIN.getType(),
+                                                                firstExpectedUserFile.getFileData());
+
+        ErrorResponseDto response = httpRequestHelper.executePostWithError(FILE_ENDPOINT, headers, queryParams, multipartFile,
+                                                                           status().isUnauthorized());
+
+        assertEquals(INVALID_TOKEN_ERROR_MESSAGE, response.getMessage());
+        assertEquals(BAD_CREDENTIALS_ERROR.getCode(), response.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    void postFileShouldReturnErrorIfFileWithSameNameAlreadyPresentInStorage() {
+        usersFileRepository.save(firstExpectedUserFile);
+        queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
+        MockMultipartFile multipartFile = new MockMultipartFile("file", FIRST_EXPECTED_FILE_NAME, MediaType.TEXT_PLAIN.getType(),
+                                                                firstExpectedUserFile.getFileData());
+
+        ErrorResponseDto response = httpRequestHelper.executePostWithError(FILE_ENDPOINT, headers, queryParams, multipartFile,
+                                                                           status().isBadRequest());
+
+        assertEquals("File with this name already exists id database. Rename file and try again.", response.getMessage());
+        assertEquals(FILE_STORAGE_ERROR.getCode(), response.getId());
     }
 
     @Test
@@ -110,6 +169,33 @@ class FilesControllerTests extends AbstractControllerTest {
 
     @Test
     @SneakyThrows
+    void putFileShouldReturnErrorIfUserNotFoundByToken() {
+        usersRepository.deleteAll();
+        queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
+        PutFileRequestDto requestBody = new PutFileRequestDto(SECOND_EXPECTED_FILE_NAME);
+
+        ErrorResponseDto response = httpRequestHelper.executePutWithError(FILE_ENDPOINT, headers, queryParams, requestBody,
+                                                                          status().isUnauthorized());
+
+        assertEquals(INVALID_TOKEN_ERROR_MESSAGE, response.getMessage());
+        assertEquals(BAD_CREDENTIALS_ERROR.getCode(), response.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    void putFileShouldReturnErrorIfFileNotFound() {
+        queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
+        PutFileRequestDto requestBody = new PutFileRequestDto(SECOND_EXPECTED_FILE_NAME);
+
+        ErrorResponseDto response = httpRequestHelper.executePutWithError(FILE_ENDPOINT, headers, queryParams, requestBody,
+                                                                          status().isBadRequest());
+
+        assertEquals(FILE_NOT_FOUND_ERROR_MESSAGE, response.getMessage());
+        assertEquals(FILE_STORAGE_ERROR.getCode(), response.getId());
+    }
+
+    @Test
+    @SneakyThrows
     void deleteFileShouldRemoveItFromStorage() {
         usersFileRepository.save(firstExpectedUserFile);
         queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
@@ -118,6 +204,30 @@ class FilesControllerTests extends AbstractControllerTest {
 
         UserFile responseFile = usersFileRepository.findByUserIdAndFileName(user.getId(), FIRST_EXPECTED_FILE_NAME);
         assertNull(responseFile);
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteFileShouldReturnErrorIfUserNotFoundByToken() {
+        usersRepository.deleteAll();
+        queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
+
+        ErrorResponseDto response = httpRequestHelper.executeDeleteWithError(FILE_ENDPOINT, headers, queryParams,
+                                                                             status().isUnauthorized());
+
+        assertEquals(INVALID_TOKEN_ERROR_MESSAGE, response.getMessage());
+        assertEquals(BAD_CREDENTIALS_ERROR.getCode(), response.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteFileShouldReturnErrorIfFileNotFound() {
+        queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
+
+        ErrorResponseDto response = httpRequestHelper.executeDeleteWithError(FILE_ENDPOINT, headers, queryParams, status().isBadRequest());
+
+        assertEquals(FILE_NOT_FOUND_ERROR_MESSAGE, response.getMessage());
+        assertEquals(FILE_STORAGE_ERROR.getCode(), response.getId());
     }
 
     @Test
@@ -136,9 +246,23 @@ class FilesControllerTests extends AbstractControllerTest {
                            secondExpectedUserFile.getFileData().length);
     }
 
+    @Test
+    @SneakyThrows
+    void getFilesShouldReturnErrorIfUserNotFoundByToken() {
+        usersRepository.deleteAll();
+        queryParams.add("limit", String.valueOf(2));
+
+        ErrorResponseDto response = httpRequestHelper.executeGetListOfFilesWithError("/list", headers,
+                                                                                     queryParams,
+                                                                                     status().isUnauthorized());
+
+        assertEquals(INVALID_TOKEN_ERROR_MESSAGE, response.getMessage());
+        assertEquals(BAD_CREDENTIALS_ERROR.getCode(), response.getId());
+    }
+
 
     @NotNull
-    private static GetListOfFilesResponseDto getFileResponseByFileName(List<GetListOfFilesResponseDto> response, String fileName) {
+    private GetListOfFilesResponseDto getFileResponseByFileName(List<GetListOfFilesResponseDto> response, String fileName) {
         return response.stream().filter(r -> r.filename().equals(fileName))
                        .findFirst()
                        .orElseThrow(() -> new AssertionError("File should be present in collection."));

@@ -7,8 +7,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.MultiValueMap;
+import ru.netology.cloudservice.dto.ErrorResponseDto;
 import ru.netology.cloudservice.dto.GetListOfFilesResponseDto;
 import ru.netology.cloudservice.dto.LoginResponseDto;
 
@@ -68,6 +70,23 @@ public final class HttpRequestHelper {
                .andExpect(status().isOk());
     }
 
+    public ErrorResponseDto executePostWithError(String endpoint, HttpHeaders headers, MultiValueMap params, MockMultipartFile file,
+                                                 ResultMatcher resultMatcher) throws Exception {
+        String responseJson = mockMvc.perform(MockMvcRequestBuilders.multipart(endpoint)
+                                                                    .file(file)
+                                                                    .headers(headers)
+                                                                    .params(params)
+                                                                    .contentType(MediaType.MULTIPART_FORM_DATA))
+                                     .andDo(print())
+                                     .andExpect(resultMatcher)
+                                     .andReturn()
+                                     .getResponse()
+                                     .getContentAsString();
+        Type listType = new TypeToken<ErrorResponseDto>() {
+        }.getType();
+        return gson.fromJson(responseJson, listType);
+    }
+
     public byte[] executeGet(String endpoint, HttpHeaders headers, MultiValueMap queryParams) throws Exception {
         return mockMvc.perform(get(endpoint)
                                        .contentType(APPLICATION_JSON)
@@ -80,6 +99,22 @@ public final class HttpRequestHelper {
                       .getContentAsByteArray();
     }
 
+    public <T> T executeGetWithError(String endpoint, HttpHeaders headers, MultiValueMap queryParams, ResultMatcher resultMatcher)
+            throws Exception {
+        String responseJson = mockMvc.perform(get(endpoint)
+                                                      .contentType(APPLICATION_JSON)
+                                                      .headers(headers)
+                                                      .queryParams(queryParams))
+                                     .andDo(print())
+                                     .andExpect(resultMatcher)
+                                     .andReturn()
+                                     .getResponse()
+                                     .getContentAsString();
+        Type listType = new TypeToken<ErrorResponseDto>() {
+        }.getType();
+        return gson.fromJson(responseJson, listType);
+    }
+
     public <T> T executeGetListOfFiles(String endpoint, HttpHeaders headers, MultiValueMap queryParams) throws Exception {
         String responseJson = mockMvc.perform(get(endpoint)
                                                       .headers(headers)
@@ -89,7 +124,41 @@ public final class HttpRequestHelper {
                                      .andReturn()
                                      .getResponse()
                                      .getContentAsString();
-        Type listType = new TypeToken<ArrayList<GetListOfFilesResponseDto>>(){}.getType();
+        Type listType = new TypeToken<ArrayList<GetListOfFilesResponseDto>>() {
+        }.getType();
+        return gson.fromJson(responseJson, listType);
+    }
+
+    public <T> T executeGetListOfFilesWithError(String endpoint, HttpHeaders headers, MultiValueMap queryParams,
+                                                ResultMatcher resultMatcher) throws Exception {
+        String responseJson = mockMvc.perform(get(endpoint)
+                                                      .headers(headers)
+                                                      .queryParams(queryParams))
+                                     .andDo(print())
+                                     .andExpect(resultMatcher)
+                                     .andReturn()
+                                     .getResponse()
+                                     .getContentAsString();
+        Type listType = new TypeToken<ErrorResponseDto>() {
+        }.getType();
+        return gson.fromJson(responseJson, listType);
+    }
+
+    public <T> T executePutWithError(String endpoint, HttpHeaders headers, MultiValueMap queryParams, Object body,
+                                     ResultMatcher resultMatcher) throws Exception {
+        String responseJson = mockMvc.perform(put(endpoint)
+                                                      .contentType(APPLICATION_JSON)
+                                                      .headers(headers)
+                                                      .queryParams(queryParams)
+                                                      .content(gson.toJson(body)))
+                                     .andDo(print())
+                                     .andExpect(resultMatcher)
+                                     .andReturn()
+                                     .getResponse()
+                                     .getContentAsString();
+
+        Type listType = new TypeToken<ErrorResponseDto>() {
+        }.getType();
         return gson.fromJson(responseJson, listType);
     }
 
@@ -109,5 +178,21 @@ public final class HttpRequestHelper {
                                 .queryParams(queryParams))
                .andDo(print())
                .andExpect(status().isOk());
+    }
+
+    public <T> T executeDeleteWithError(String endpoint, HttpHeaders headers, MultiValueMap queryParams, ResultMatcher resultMatcher)
+            throws Exception {
+        String responseJson = mockMvc.perform(delete(endpoint)
+                                                      .headers(headers)
+                                                      .queryParams(queryParams))
+                                     .andDo(print())
+                                     .andExpect(resultMatcher)
+                                     .andReturn()
+                                     .getResponse()
+                                     .getContentAsString();
+
+        Type listType = new TypeToken<ErrorResponseDto>() {
+        }.getType();
+        return gson.fromJson(responseJson, listType);
     }
 }
