@@ -25,6 +25,8 @@ import java.sql.Types;
 @Table(name = "USER_FILES")
 public class UserFile implements Serializable {
 
+    private static final long serialVersionUID = -600071918509823365L;
+
     @Id
     @GeneratedValue
     private Long id;
