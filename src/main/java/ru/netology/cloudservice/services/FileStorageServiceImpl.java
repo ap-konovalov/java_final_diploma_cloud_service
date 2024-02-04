@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.netology.cloudservice.dto.GetListOfFilesResponseDto;
 import ru.netology.cloudservice.entities.User;
@@ -27,6 +28,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         this.authService = authService;
     }
 
+    @Transactional(readOnly = true)
     public byte[] getFile(String authToken, String fileName) {
         User user = authService.getUserByToken(authToken);
         UserFile file = usersFileRepository.findByUserIdAndFileName(user.getId(), fileName);
@@ -34,6 +36,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         return file.getFileData();
     }
 
+    @Transactional
     public void storeFile(User user, MultipartFile file) {
         checkFileNotExistsInStorage(user.getId(), file);
         try {
@@ -44,6 +47,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
     }
 
+    @Transactional
     public void putFile(User user, String oldFileName, String newFileName) {
         UserFile file = usersFileRepository.findByUserIdAndFileName(user.getId(), oldFileName);
         checkFileIsPresentInStorage(file);
@@ -51,12 +55,14 @@ public class FileStorageServiceImpl implements FileStorageService {
         usersFileRepository.save(file);
     }
 
+    @Transactional
     public void deleteFile(User user, String fileName) {
         UserFile file = usersFileRepository.findByUserIdAndFileName(user.getId(), fileName);
         checkFileIsPresentInStorage(file);
         usersFileRepository.delete(file);
     }
 
+    @Transactional(readOnly = true)
     public List<GetListOfFilesResponseDto> getListOfFilesResponse(User user, int limit) {
         List<UserFile> userFiles = usersFileRepository.findByUserId(user.getId(), PageRequest.of(0, limit));
         return userFiles.stream()
