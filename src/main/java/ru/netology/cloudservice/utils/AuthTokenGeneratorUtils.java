@@ -8,10 +8,11 @@ import java.util.Base64;
 @UtilityClass
 public class AuthTokenGeneratorUtils {
 
-    public String generateAuthToken(){
-        SecureRandom random = new SecureRandom();
+    private final SecureRandom RANDOM = new SecureRandom();
+
+    public String generateAuthToken() {
         byte[] token = new byte[32];
-        random.nextBytes(token);
+        RANDOM.nextBytes(token);
         return Base64.getEncoder().encodeToString(token);
     }
 }
