@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import ru.netology.cloudservice.entities.User;
-import ru.netology.cloudservice.models.LoginRequestDto;
-import ru.netology.cloudservice.models.LoginResponseDto;
+import ru.netology.cloudservice.dto.LoginRequestDto;
+import ru.netology.cloudservice.dto.LoginResponseDto;
 import ru.netology.cloudservice.services.AuthService;
 
 @RestController

@@ -9,8 +9,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.MultiValueMap;
-import ru.netology.cloudservice.models.GetListOfFilesResponseDto;
-import ru.netology.cloudservice.models.LoginResponseDto;
+import ru.netology.cloudservice.dto.GetListOfFilesResponseDto;
+import ru.netology.cloudservice.dto.LoginResponseDto;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

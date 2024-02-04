@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ru.netology.cloudservice.entities.User;
-import ru.netology.cloudservice.models.GetListOfFilesResponseDto;
-import ru.netology.cloudservice.models.PutFileRequestDto;
+import ru.netology.cloudservice.dto.GetListOfFilesResponseDto;
+import ru.netology.cloudservice.dto.PutFileRequestDto;
 import ru.netology.cloudservice.services.AuthService;
 import ru.netology.cloudservice.services.FileStorageService;
 

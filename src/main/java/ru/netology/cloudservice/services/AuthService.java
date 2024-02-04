@@ -1,7 +1,7 @@
 package ru.netology.cloudservice.services;
 
 import ru.netology.cloudservice.entities.User;
-import ru.netology.cloudservice.models.LoginRequestDto;
+import ru.netology.cloudservice.dto.LoginRequestDto;
 
 public interface AuthService {
 

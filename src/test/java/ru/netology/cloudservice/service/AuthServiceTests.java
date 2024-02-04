@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.netology.cloudservice.entities.User;
 import ru.netology.cloudservice.exceptions.BadCredentialsException;
 import ru.netology.cloudservice.exceptions.NoSuchUserException;
-import ru.netology.cloudservice.models.LoginRequestDto;
+import ru.netology.cloudservice.dto.LoginRequestDto;
 import ru.netology.cloudservice.providers.UsersProvider;
 import ru.netology.cloudservice.repositories.UsersRepository;
 import ru.netology.cloudservice.helpers.UserHelper;

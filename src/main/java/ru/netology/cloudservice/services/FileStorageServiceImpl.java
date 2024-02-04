@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.netology.cloudservice.entities.User;
 import ru.netology.cloudservice.entities.UserFile;
 import ru.netology.cloudservice.exceptions.FileStorageException;
-import ru.netology.cloudservice.models.GetListOfFilesResponseDto;
+import ru.netology.cloudservice.dto.GetListOfFilesResponseDto;
 import ru.netology.cloudservice.repositories.UsersFileRepository;
 
 import java.io.IOException;

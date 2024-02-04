@@ -12,8 +12,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.netology.cloudservice.controller.AbstractControllerTest;
 import ru.netology.cloudservice.entities.User;
 import ru.netology.cloudservice.helpers.HttpRequestHelper;
-import ru.netology.cloudservice.models.LoginRequestDto;
-import ru.netology.cloudservice.models.LoginResponseDto;
+import ru.netology.cloudservice.dto.LoginRequestDto;
+import ru.netology.cloudservice.dto.LoginResponseDto;
 import ru.netology.cloudservice.providers.UsersProvider;
 import ru.netology.cloudservice.repositories.UsersRepository;
 

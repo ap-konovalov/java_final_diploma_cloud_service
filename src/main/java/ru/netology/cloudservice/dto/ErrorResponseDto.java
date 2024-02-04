@@ -1,4 +1,4 @@
-package ru.netology.cloudservice.models;
+package ru.netology.cloudservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

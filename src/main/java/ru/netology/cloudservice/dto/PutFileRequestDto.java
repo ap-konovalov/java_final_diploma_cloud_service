@@ -1,4 +1,4 @@
-package ru.netology.cloudservice.models;
+package ru.netology.cloudservice.dto;
 
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.NotBlank;
 

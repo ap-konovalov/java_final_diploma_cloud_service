@@ -1,4 +1,4 @@
-package ru.netology.cloudservice.models;
+package ru.netology.cloudservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
