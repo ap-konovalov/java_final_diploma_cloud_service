@@ -8,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.netology.cloudservice.controller.AbstractControllerTest;
 import ru.netology.cloudservice.dto.ErrorResponseDto;
@@ -21,6 +23,7 @@ import ru.netology.cloudservice.repositories.UsersRepository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.netology.cloudservice.enums.ErrorCode.BAD_CREDENTIALS_ERROR;
 import static ru.netology.cloudservice.enums.ErrorCode.NO_SUCH_USER_ERROR;
@@ -37,6 +40,9 @@ class AuthControllerTests extends AbstractControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    @Autowired
+    private WebApplicationContext context;
+
     private User user;
 
     private HttpRequestHelper httpRequestHelper;
@@ -45,6 +51,10 @@ class AuthControllerTests extends AbstractControllerTest {
     @BeforeEach
     private void setUp() {
         user = UsersProvider.getUserWithToken();
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
         httpRequestHelper = new HttpRequestHelper(mockMvc);
     }
 
@@ -53,9 +63,8 @@ class AuthControllerTests extends AbstractControllerTest {
     void loginForExistingUserShouldSaveAndReturnAuthToken() {
         user.setAuthToken(null);
         usersRepository.save(user);
-        LoginRequestDto requestBody = new LoginRequestDto(user.getLogin(), user.getPassword());
 
-        LoginResponseDto response = httpRequestHelper.executePost("/login", requestBody, LoginResponseDto.class);
+        LoginResponseDto response = doLogin();
 
         assertFalse(response.authToken().isBlank());
         assertFalse(usersRepository.findByLogin(user.getLogin()).get().getAuthToken().isBlank(),
@@ -78,7 +87,7 @@ class AuthControllerTests extends AbstractControllerTest {
     void logoutShouldRemoveToken() {
         usersRepository.save(user);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Auth-Token", user.getAuthToken());
+        headers.add("Auth-Token", "Bearer " + doLogin().authToken());
 
         httpRequestHelper.executePost("/logout", headers);
 
@@ -89,11 +98,18 @@ class AuthControllerTests extends AbstractControllerTest {
     @SneakyThrows
     void logoutShouldReturnErrorIfUserNotFoundByToken() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Auth-Token", user.getAuthToken());
+        headers.add("Auth-Token", "Bearer " + user.getAuthToken());
 
         ErrorResponseDto response = httpRequestHelper.executePostWithError("/logout", headers, status().isUnauthorized());
 
         assertEquals("Invalid token.", response.getMessage());
         assertEquals(BAD_CREDENTIALS_ERROR.getCode(), response.getId());
+    }
+
+    private LoginResponseDto doLogin() throws Exception {
+        LoginRequestDto requestBody = new LoginRequestDto(user.getLogin(), user.getPassword());
+
+        LoginResponseDto response = httpRequestHelper.executePost("/login", requestBody, LoginResponseDto.class);
+        return response;
     }
 }

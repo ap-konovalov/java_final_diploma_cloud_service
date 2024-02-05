@@ -5,11 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.netology.cloudservice.dto.ErrorResponseDto;
 import ru.netology.cloudservice.exceptions.BadCredentialsException;
 import ru.netology.cloudservice.exceptions.FileStorageException;
 import ru.netology.cloudservice.exceptions.NoSuchUserException;
 import ru.netology.cloudservice.exceptions.UserAddException;
-import ru.netology.cloudservice.dto.ErrorResponseDto;
 
 import static ru.netology.cloudservice.enums.ErrorCode.BAD_CREDENTIALS_ERROR;
 import static ru.netology.cloudservice.enums.ErrorCode.CONSTRAINT_VIOLATION_ERROR;

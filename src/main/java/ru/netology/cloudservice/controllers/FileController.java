@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,7 @@ public class FileController {
     private final AuthService authService;
     private final FileStorageService fileStorageService;
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(path = "/file", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadFile(@RequestHeader("auth-token") String authToken,
                                              @RequestParam(name = "filename") String fileName,
@@ -41,6 +43,7 @@ public class FileController {
         return ResponseEntity.ok("Success upload.");
     }
 
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/file")
     public ResponseEntity<Void> deleteFile(@RequestHeader("auth-token") String authToken,
                                            @RequestParam(name = "filename") @NotEmpty(message = "must not be empty") String fileName) {
@@ -49,6 +52,7 @@ public class FileController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/file")
     public ResponseEntity<byte[]> getFile(@RequestHeader("auth-token") String authToken,
                                           @RequestParam(name = "filename") String fileName) {
@@ -59,6 +63,7 @@ public class FileController {
                              .body(fileData);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PutMapping("/file")
     public ResponseEntity<Void> putFile(@RequestHeader("auth-token") String authToken,
                                         @RequestParam(name = "filename") String oldFileName,
@@ -68,6 +73,7 @@ public class FileController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping(path = "/list")
     public ResponseEntity<List<GetListOfFilesResponseDto>> getFiles(@RequestHeader("auth-token") String authToken,
                                                                     @RequestParam

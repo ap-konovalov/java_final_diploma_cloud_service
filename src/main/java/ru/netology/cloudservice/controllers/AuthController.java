@@ -3,6 +3,7 @@ package ru.netology.cloudservice.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -25,6 +26,7 @@ public class AuthController {
         return ResponseEntity.ok(responseBody);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestHeader(name = "Auth-Token") String authToken) {
         User user = authService.getUserByToken(authToken);
