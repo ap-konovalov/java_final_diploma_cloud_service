@@ -50,7 +50,7 @@ public class FileStorageServiceTests {
 
     @BeforeAll
     public static void init() {
-        user = UsersProvider.getUserWithToken();
+        user = UsersProvider.getUser();
         user.setId(1L);
     }
 

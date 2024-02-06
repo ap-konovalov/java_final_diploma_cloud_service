@@ -16,11 +16,12 @@ import org.springframework.util.MultiValueMap;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.netology.cloudservice.controller.AbstractControllerTest;
 import ru.netology.cloudservice.dto.ErrorResponseDto;
+import ru.netology.cloudservice.dto.GetListOfFilesResponseDto;
+import ru.netology.cloudservice.dto.PutFileRequestDto;
 import ru.netology.cloudservice.entities.User;
 import ru.netology.cloudservice.entities.UserFile;
 import ru.netology.cloudservice.helpers.HttpRequestHelper;
-import ru.netology.cloudservice.dto.GetListOfFilesResponseDto;
-import ru.netology.cloudservice.dto.PutFileRequestDto;
+import ru.netology.cloudservice.helpers.LoginHelper;
 import ru.netology.cloudservice.providers.UsersProvider;
 import ru.netology.cloudservice.repositories.UsersFileRepository;
 import ru.netology.cloudservice.repositories.UsersRepository;
@@ -52,8 +53,8 @@ class FilesControllerTests extends AbstractControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    private User user;
-    private HttpRequestHelper httpRequestHelper;
+    private static User user;
+    private static HttpRequestHelper httpRequestHelper;
     private HttpHeaders headers;
     private MultiValueMap queryParams;
     private static final String FIRST_EXPECTED_FILE_NAME = "first.txt";
@@ -65,13 +66,13 @@ class FilesControllerTests extends AbstractControllerTest {
 
 
     @BeforeEach
-    private void setUp() {
+    private void setUp() throws Exception {
         usersFileRepository.deleteAll();
         httpRequestHelper = new HttpRequestHelper(mockMvc);
-        user = UsersProvider.getUserWithToken();
+        user = UsersProvider.getUser();
         usersRepository.save(user);
         headers = new HttpHeaders();
-        headers.add("auth-token", user.getAuthToken());
+        headers.add("auth-token", LoginHelper.loginAndGetAuthToken(httpRequestHelper, user));
         queryParams = new LinkedMultiValueMap();
         firstExpectedUserFile = new UserFile(1L, FIRST_EXPECTED_FILE_NAME, "First".getBytes(), user);
         secondExpectedUserFile = new UserFile(2L, SECOND_EXPECTED_FILE_NAME, "Second".getBytes(), user);
@@ -102,7 +103,8 @@ class FilesControllerTests extends AbstractControllerTest {
     @Test
     @SneakyThrows
     void getFileShouldReturnErrorIfUserNotFoundByToken() {
-        usersRepository.deleteAll();
+        user.setAuthToken(null);
+        usersRepository.save(user);
         queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
 
         ErrorResponseDto response = httpRequestHelper.executeGetWithError(FILE_ENDPOINT, headers, queryParams, status().isUnauthorized());
@@ -128,7 +130,8 @@ class FilesControllerTests extends AbstractControllerTest {
     @SneakyThrows
     void postFileShouldReturnErrorIfUserNotFoundByToken() {
         queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
-        usersRepository.deleteAll();
+        user.setAuthToken(null);
+        usersRepository.save(user);
         MockMultipartFile multipartFile = new MockMultipartFile("file", FIRST_EXPECTED_FILE_NAME, MediaType.TEXT_PLAIN.getType(),
                                                                 firstExpectedUserFile.getFileData());
 
@@ -170,7 +173,8 @@ class FilesControllerTests extends AbstractControllerTest {
     @Test
     @SneakyThrows
     void putFileShouldReturnErrorIfUserNotFoundByToken() {
-        usersRepository.deleteAll();
+        user.setAuthToken(null);
+        usersRepository.save(user);
         queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
         PutFileRequestDto requestBody = new PutFileRequestDto(SECOND_EXPECTED_FILE_NAME);
 
@@ -209,7 +213,8 @@ class FilesControllerTests extends AbstractControllerTest {
     @Test
     @SneakyThrows
     void deleteFileShouldReturnErrorIfUserNotFoundByToken() {
-        usersRepository.deleteAll();
+        user.setAuthToken(null);
+        usersRepository.save(user);
         queryParams.add(FILENAME_QUERY_PARAM, FIRST_EXPECTED_FILE_NAME);
 
         ErrorResponseDto response = httpRequestHelper.executeDeleteWithError(FILE_ENDPOINT, headers, queryParams,
@@ -249,7 +254,8 @@ class FilesControllerTests extends AbstractControllerTest {
     @Test
     @SneakyThrows
     void getFilesShouldReturnErrorIfUserNotFoundByToken() {
-        usersRepository.deleteAll();
+        user.setAuthToken(null);
+        usersRepository.save(user);
         queryParams.add("limit", String.valueOf(2));
 
         ErrorResponseDto response = httpRequestHelper.executeGetListOfFilesWithError("/list", headers,
