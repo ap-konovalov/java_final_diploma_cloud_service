@@ -23,18 +23,20 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final CorsProperties corsProperties;
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Autowired
-    private CustomAccessDeniedHandler customAccessDeniedHandler;
-
-    @Autowired
-    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-
-    @Autowired
-    public WebConfig(CorsProperties corsProperties) {
+    public WebConfig(CorsProperties corsProperties, JwtTokenProvider jwtTokenProvider,
+                     CustomAccessDeniedHandler customAccessDeniedHandler, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
         this.corsProperties = corsProperties;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+
     }
 
     @Override

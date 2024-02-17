@@ -26,7 +26,6 @@ public class AuthController {
         return ResponseEntity.ok(responseBody);
     }
 
-    @PreAuthorize("hasRole('USER')")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestHeader(name = "Auth-Token") String authToken) {
         User user = authService.getUserByToken(authToken);
